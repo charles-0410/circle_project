@@ -1,10 +1,14 @@
+@import "./icon.scss";
+
 $color-white: #fff !important;
+$color-black: #2d2f33 !important;
 $color-main: #fc4d50 !important;
-$color-mian-o: #fff0f1 !important;
+$color-main-o: #f56c6c !important;
 $color-gray: #8590a6 !important;
 $color-gray-hover: #76839b !important;
 $color-gray-text: #656973 !important;
 $color-gray-text-s: #a8abb3 !important;
+$color-gray-line-d: #d0d3d9 !important;
 $color-gray-line: #ebebed !important;
 $color-gray-line-s: #f4f4f4 !important;
 $color-gray-bg: #f6f8fa !important;
@@ -13,7 +17,7 @@ $color-success: #67c23a !important;
 
 $shadow-g: 0 1px 3px rgba(26, 26, 26, 0.1);
 
-$animation: "all .3s ease-out";
+$animation: all 0.3s ease-out;
 
 .clearfix {
   &::after {
