@@ -2,18 +2,21 @@
 
 $color-white: #fff !important;
 $color-black: #2d2f33 !important;
-$color-main: #fc4d50 !important;
-$color-main-o: #f56c6c !important;
+$color-main: #00c58e !important;
+$color-main-o: #ccf3e8 !important;
+$color-main-hover: #01ad7d !important;
 $color-gray: #8590a6 !important;
 $color-gray-hover: #76839b !important;
-$color-gray-text: #656973 !important;
+// $color-gray-text: #656973 !important;
+$color-gray-text: #606f7b !important;
 $color-gray-text-s: #a8abb3 !important;
 $color-gray-line-d: #d0d3d9 !important;
 $color-gray-line: #ebebed !important;
 $color-gray-line-s: #f4f4f4 !important;
 $color-gray-bg: #f6f8fa !important;
 $color-gray-bg-hover: #f1f1f1 !important;
-$color-success: #67c23a !important;
+$color-error: #fc4d50 !important;
+$color-error-o: #f56c6c !important;
 
 $shadow-g: 0 1px 3px rgba(26, 26, 26, 0.1);
 
@@ -43,18 +46,58 @@ $animation: all 0.3s ease-out;
   background: #fff;
   border-radius: 3px;
 }
+.Modal {
+  position: relative;
+  z-index: 1;
+  margin: auto;
+}
+.Modal-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  transition: $animation;
+}
+.Modal-backMask {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(26, 26, 26, 0.7);
+}
+.Modal-inner {
+  box-shadow: $shadow-g;
+  background: #fff;
+  border-radius: 3px;
+}
+.Modal-closeButton {
+  position: absolute;
+  top: 0px;
+  right: -50px;
+  padding: 10px;
+  user-select: none;
+  cursor: pointer;
+  i {
+    color: $color-white;
+    font-size: 26px;
+  }
+}
 
-/* float：透明度 + 滑动组合 */
-.float-enter {
-  opacity: 0;
+/* silde：从下往上滑动 */
+.slide-enter {
   transform: translate3d(0, 10%, 0);
 }
-.float-leave-to {
-  opacity: 0;
+.slide-leave-to {
   transform: translate3d(0, 10%, 0);
 }
-.float-leave-active,
-.float-enter-active {
+.slide-leave-active,
+.slide-enter-active {
   transition: $animation;
 }
 /* fade：渐隐渐显 */
@@ -64,7 +107,7 @@ $animation: all 0.3s ease-out;
 .fade-leave-to {
   opacity: 0;
 }
-.fade-leave-active,
-.fade-enter-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: $animation;
 }

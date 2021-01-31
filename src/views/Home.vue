@@ -14,7 +14,7 @@
                 <li>热榜</li>
               </ul>
               <div class="TabCard-r">
-                <button class="TabCard-btn">
+                <button class="TabCard-btn" @click="changeEditFlag(true)">
                   <i class="iconfont">&#xe628;</i>
                   发表
                 </button>
@@ -27,30 +27,41 @@
         </div>
         <div class="sideBar">
           <div class="userInfoCard shadow">
-            123
+            <Profile />
           </div>
         </div>
       </div>
     </div>
+    <EditPopup :isShow="isShowEditPopup" @handleClose="changeEditFlag(false)" />
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, ref } from 'vue'
 import { useStore } from 'vuex'
 import Header from '../components/Header.vue'
 import PostList from '../components/PostList.vue'
+import Profile from '../components/Profile.vue'
+import EditPopup from '../components/EditPopup.vue'
 
 export default defineComponent({
   components: {
     Header,
-    PostList
+    PostList,
+    Profile,
+    EditPopup
   },
   setup () {
     const store = useStore()
     const isLogin = computed(() => store.state.user.isLogin)
+    const isShowEditPopup = ref(true)
+    const changeEditFlag = (flag: boolean) => {
+      isShowEditPopup.value = flag
+    }
     return {
-      isLogin
+      isLogin,
+      isShowEditPopup,
+      changeEditFlag
     }
   }
 })
@@ -101,13 +112,12 @@ export default defineComponent({
               background-color: $color-main;
               transition: $animation;
               &:hover {
-                background-color: $color-main-o;
+                background-color: $color-main-hover;
               }
             }
           }
         }
         .PostList {
-          display: flex;
           min-height: 500px;
         }
       }
@@ -115,7 +125,6 @@ export default defineComponent({
     .sideBar {
       .userInfoCard {
         width: 300px;
-        min-height: 400px;
       }
     }
   }
