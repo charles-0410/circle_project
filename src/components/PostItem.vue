@@ -2,13 +2,26 @@
   <div class="PostItem">
     <div class="PostItem-inner">
       <div class="PostItem-head">
-        <div class="head-avatar">
-          <img src="http://zzy19.cn/tx5.png" class="avatar-image">
+        <div
+          class="head-avatar"
+          @mouseenter="showProfileCard(post.user.userId)"
+          @mouseleave="changeShowProfileCard(false)"
+        >
+          <img :src="post.user.avatar_url" class="avatar-image" />
+          <ProfileCard :isShow="isShowProfileCard" :data="profileData" />
+          <div
+            class="ani-spread"
+            :class="post.user.userId === 'charles' ? 'ani-spread-run' : ''"
+          />
         </div>
         <div class="head-userInfo">
-          <span class="nickname">首席可爱执行官</span>
+          <span class="nickname">{{ post.user.nickName }}</span>
           <p class="headline">
-            躲起来的星星也在努力发光<span class="datetime"><i class="dot">·</i>1小时前</span>
+            躲起来的星星也在努力发光
+            <span class="datetime">
+              <i class="dot">·</i>
+              {{ new Date(post.createdAt).toLocaleTimeString() }}
+            </span>
           </p>
         </div>
         <div class="head-r">
@@ -20,32 +33,28 @@
       <div class="PostItem-body">
         <div class="content-row">
           <div class="content-box">
-            <span>时间并没有改变人生的属性
-              但是它给了我们再来一次的念想
-              再见，2020
-              未来不一定会更好，但是 2021 一定是你我新的篇章
-              愿你我不再负重前行，轻装简从</span>
+            <span>{{ post.content }}</span>
           </div>
         </div>
         <div class="image-row">
-          <div class="image-box col-3">
-            <div class="image-item">
-              <img src="http://zzy19.cn/ms1.jpg">
-            </div>
-            <div class="image-item">
-              <img src="http://zzy19.cn/ms2.jpg">
-            </div>
-            <div class="image-item">
-              <img src="http://zzy19.cn/ms3.jpg">
-            </div>
-            <div class="image-item">
-              <img src="http://zzy19.cn/ms4.jpg">
+          <div
+            class="image-box"
+            :class="post.images.length > 1 ? 'col-3' : 'col-1'"
+          >
+            <div
+              class="image-item"
+              v-for="(item, index) in post.images"
+              :key="index"
+            >
+              <img :src="item" />
             </div>
           </div>
         </div>
         <div class="topic-row">
           <div class="topic-box">
-            <span class="topic-item"><i class="iconfont">&#xe8b1;</i>分享美食</span>
+            <span class="topic-item">
+              <i class="iconfont">&#xe8b1;</i>{{ post.topic.title }}
+            </span>
           </div>
         </div>
         <div class="operate-row">
@@ -54,7 +63,7 @@
               <i class="iconfont">&#xe61f;</i>
               喜欢
             </button>
-            <button class="operate-btn">
+            <button class="operate-btn" @click="handleShowComment">
               <i class="iconfont">&#xe655;</i>
               评论
             </button>
@@ -70,12 +79,56 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
+import { useStore } from 'vuex'
+import ProfileCard from './ProfileCard.vue'
+import { findUserInfoByUserid } from '../api/users'
 
 export default defineComponent({
-  setup () {
-    return {}
-  }
+  components: {
+    ProfileCard,
+  },
+  props: {
+    post: {
+      type: Object,
+    },
+  },
+  setup() {
+    const store = useStore()
+    const isShowProfileCard = ref(false)
+    const changeShowProfileCard = (flag: boolean) => {
+      isShowProfileCard.value = flag
+    }
+    const profileData = ref<object>({})
+    const showProfileCard = (userId: string) => {
+      changeShowProfileCard(true)
+      // 判断是否已经请求过用户信息数据(避免频繁重复请求)
+      if (profileData.value) {
+        const arr = Object.getOwnPropertyNames(profileData.value)
+        if (arr.length !== 0) {
+          return false
+        }
+      }
+      // 请求用户信息数据
+      findUserInfoByUserid(userId).then((res) => {
+        console.log(res)
+        const result = res.data
+        if (result && result.code === 200) {
+          profileData.value = result.data
+        }
+      })
+    }
+    const handleShowComment = () => {
+      store.commit('changeCommentFlag', true)
+    }
+    return {
+      isShowProfileCard,
+      changeShowProfileCard,
+      handleShowComment,
+      showProfileCard,
+      profileData,
+    }
+  },
 })
 </script>
 
@@ -91,6 +144,7 @@ export default defineComponent({
       height: 40px;
       align-items: center;
       .head-avatar {
+        position: relative;
         width: 40px;
         height: 40px;
         margin-right: 15px;
@@ -98,6 +152,9 @@ export default defineComponent({
         .avatar-image {
           width: 100%;
           height: 100%;
+          border-radius: 3px;
+        }
+        .ani-spread {
           border-radius: 3px;
         }
       }
@@ -151,8 +208,8 @@ export default defineComponent({
         margin: 10px 80px 10px 55px;
         .content-box {
           font-size: 15px;
-          line-height: 24px;
-          color: $color-gray-text;
+          line-height: 22px;
+          color: $color-gray;
           overflow: hidden;
           white-space: pre-line;
         }
@@ -193,7 +250,7 @@ export default defineComponent({
           display: flex;
           height: 30px;
           .topic-item {
-            color: $color-gray;
+            color: $color-gray-text;
             line-height: 30px;
             border-radius: 3px;
             padding: 0 8px;
@@ -221,7 +278,7 @@ export default defineComponent({
             margin-right: 10px;
             transition: $animation;
             &:hover {
-              color: $color-main
+              color: $color-main;
             }
           }
           .operate-btn-bg {

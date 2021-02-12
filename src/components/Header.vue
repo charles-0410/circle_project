@@ -1,14 +1,10 @@
 <template>
-  <header class="Header">
+  <div class="Header">
     <div class="Header-inner">
-      <div class="Header-Logo">
-        Circle
-      </div>
+      <div class="Header-Logo">Circle</div>
       <div class="Header-nav">
         <ul class="Header-nav-inner">
-          <li class="active">
-            首页
-          </li>
+          <li class="active">首页</li>
           <li>分享</li>
           <li>圈子</li>
           <li>活动</li>
@@ -16,7 +12,11 @@
       </div>
       <div class="Header-search">
         <div class="Header-search-inner">
-          <input type="text" class="Header-search-input" placeholder="输入想要搜索...">
+          <input
+            type="text"
+            class="Header-search-input"
+            placeholder="输入想要搜索..."
+          />
           <button class="search-btn">
             <i class="iconfont">&#xe636;</i>
           </button>
@@ -27,35 +27,31 @@
           <button class="Header-userInfo-btn">
             <i class="iconfont">&#xe6d5;</i>
           </button>
-          <div class="btn-tips">
-            22
-          </div>
+          <div class="btn-tips">22</div>
         </div>
         <div class="Header-userInfo-item">
           <button class="Header-userInfo-btn">
             <i class="iconfont">&#xe61e;</i>
           </button>
-          <div class="btn-tips">
-            2
-          </div>
+          <div class="btn-tips">2</div>
         </div>
         <div class="Header-profile">
           <div class="Header-avatar">
-            <img src="http://zzy19.cn/tx5.png" alt="" srcset="">
+            <img src="http://zzy19.cn/tx5.png" />
           </div>
         </div>
       </div>
     </div>
-  </header>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  setup () {
+  setup() {
     return {}
-  }
+  },
 })
 </script>
 
@@ -65,6 +61,7 @@ export default defineComponent({
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 98;
   width: 100%;
   box-shadow: $shadow-g;
   background-color: $color-white;
@@ -139,7 +136,7 @@ export default defineComponent({
           right: 0;
           width: 34px;
           height: 34px;
-          color: $color-gray;
+          color: $color-gray-text;
           line-height: 34px;
           text-align: center;
           cursor: pointer;
@@ -159,7 +156,7 @@ export default defineComponent({
           display: block;
           width: 40px;
           height: 40px;
-          color: $color-gray;
+          color: $color-gray-text;
           line-height: 40px;
           text-align: center;
           i {

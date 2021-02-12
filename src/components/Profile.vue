@@ -1,17 +1,17 @@
 <template>
   <div class="Profile">
     <div class="userCover">
-      <img src="http://zzy19.cn/14.jpg" class="userCover-image">
+      <img src="http://zzy19.cn/14.jpg" class="userCover-image" />
     </div>
     <div class="userInfo">
       <div class="avatarBox">
-        <img src="http://zzy19.cn/tx5.png" class="avatarBox-image">
+        <img :src="userInfo.avatar_url" class="avatarBox-image" />
       </div>
       <div class="userInfo-detail">
-        <span class="nickName">首席可爱执行官</span>
-        <p class="headline">
-          躲起来的星星也在努力发光
-        </p>
+        <span class="nickName">{{
+          userInfo.nickName || '首席可爱执行官'
+        }}</span>
+        <p class="headline">躲起来的星星也在努力发光</p>
       </div>
     </div>
     <div class="userRecord">
@@ -34,12 +34,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { computed, defineComponent } from 'vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
-  setup () {
-    return {}
-  }
+  setup() {
+    const store = useStore()
+    const userInfo = computed(() => store.state.user)
+    return {
+      userInfo,
+    }
+  },
 })
 </script>
 
@@ -114,7 +119,7 @@ export default defineComponent({
             position: absolute;
             right: 0;
             top: 15px;
-            content: "";
+            content: '';
             height: 20px;
             border-right: 1px solid $color-gray-line;
           }
@@ -133,7 +138,7 @@ export default defineComponent({
           line-height: 30px;
         }
         &:hover {
-          opacity: .7;
+          opacity: 0.7;
         }
       }
     }

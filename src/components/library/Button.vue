@@ -11,30 +11,30 @@ export default defineComponent({
   props: {
     type: {
       type: String,
-      default: 'primary'
+      default: 'primary',
     },
     size: {
       type: String,
-      default: 'm'
-    }
+      default: 'm',
+    },
   },
-  setup (prop) {
+  setup(prop) {
     const btnColor = {
       primary: 'btn-primary',
-      danger: 'btn-danger'
+      danger: 'btn-danger',
     }
     const btnSize = {
       s: 'btn-s',
       m: 'btn-m',
-      b: 'btn-b'
+      b: 'btn-b',
     }
     const btnCls = computed(() => {
       return `${btnColor[prop.type]} ${btnSize[prop.size]}`
     })
     return {
-      btnCls
+      btnCls,
     }
-  }
+  },
 })
 </script>
 

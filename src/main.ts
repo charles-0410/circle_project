@@ -6,9 +6,12 @@ import Button from './components/library/Button.vue'
 import router from './router'
 import store from './store'
 
+import Alert from './components/library/alert/index.ts'
+
 const app = createApp(App)
 app.use(router)
 app.use(store)
+app.use(Alert)
 app.component('ZButton', Button)
-// app.config.globalProperties.
+
 app.mount('#app')
