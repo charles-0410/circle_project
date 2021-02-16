@@ -12,7 +12,7 @@
                 <li>热榜</li>
               </ul>
               <div class="TabCard-r">
-                <button class="TabCard-refresh">
+                <button class="TabCard-refresh" @click="handleRefresh">
                   <i class="iconfont">&#xe659;</i>
                 </button>
                 <button class="TabCard-btn" @click="changeEditFlag(true)">
@@ -23,7 +23,7 @@
               </div>
             </div>
             <div class="PostList-wrap">
-              <PostList :isLoadMore="isLoadMore" />
+              <PostList :isLoadMore="isLoadMore" :isLoading="isLoadingPosts" />
             </div>
           </div>
         </div>
@@ -89,14 +89,18 @@ export default defineComponent({
     const changeImageViewFlag = (flag: boolean) => {
       isShowImageView.value = flag
     }
-    const _fetchPosts = () => {
-      store.commit('setLoading', true)
-      fetchPosts()
+    const _fetchPosts = async (isFirst: boolean) => {
+      if (isFirst) {
+        store.commit('setLoading', true)
+      }
+      await fetchPosts()
         .then((res) => {
           const result = res.data
           if (result && result.code === 200) {
             const list = result.data.list
-            store.commit('addPosts', list)
+            const count = result.data.count
+            store.commit('clearPosts')
+            store.commit('addPosts', { list, count })
             Alert({
               type: 'success',
               msg: `已为您推荐了 ${list.length} 条帖子`,
@@ -107,6 +111,7 @@ export default defineComponent({
         .catch((err) => {
           store.commit('setLoading', false)
         })
+      return true
     }
     // 处理侧边栏定位问题
     const SideBar = ref<HTMLElement | null>(null)
@@ -127,7 +132,7 @@ export default defineComponent({
         const scrollY = window.scrollY
         const diff = scrollH - scrollY
         // 803 到底
-        if (diff < 950 && canLoadMore === true) {
+        if (diff < 1000 && canLoadMore === true) {
           console.log('触发加载更多帖子')
           isLoadMore.value = true
           loadMorePost()
@@ -143,16 +148,35 @@ export default defineComponent({
         console.log(res)
         const result = res.data
         if (result && result.code === 200) {
-          const posts = result.data.list
-          store.commit('addPosts', posts)
+          const list = result.data.list
+          const count = result.data.count
+          store.commit('addPosts', { list, count })
           store.commit('changePostCurrentPage', page)
           isLoadMore.value = false
+          // 判断数据库还有没有帖子数据可请求
+          const currentPostsLen = store.state.postList.length
+          if (currentPostsLen === count) {
+            Alert({
+              type: 'success',
+              msg: '已加载完，没有更多帖子咯！',
+            })
+            return
+          }
           canLoadMore = true
         }
       })
     }
+    // 刷新帖子列表
+    const isLoadingPosts = ref<boolean>(false)
+    const handleRefresh = async () => {
+      isLoadingPosts.value = true
+      const status = await _fetchPosts(false)
+      if (status === true) {
+        isLoadingPosts.value = false
+      }
+    }
     onMounted(() => {
-      _fetchPosts()
+      _fetchPosts(true)
       setSideBar()
       window.addEventListener('resize', () => {
         setSideBar()
@@ -171,6 +195,8 @@ export default defineComponent({
       setSideBar,
       Main,
       isLoadMore,
+      isLoadingPosts,
+      handleRefresh,
     }
   },
 })

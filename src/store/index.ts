@@ -1,16 +1,44 @@
 import { createStore } from 'vuex'
 
+export interface UserInfo {
+  avatar_url: string
+  createdAt: string
+  nickName: string
+  updatedAt: string
+  userId: string
+  _id: string
+}
 export interface UserProps {
   isLogin: Boolean
+}
+export interface CommentProps {
+  content: string
+  createdAt: string
+  isReply: string
+  postId: string
+  reply: object[]
+  updatedAt: string
+  userId: UserInfo
+  _id: string
 }
 export interface GlobalDataProps {
   user: UserProps
   token: String
   sid: String
   isShowComment: Boolean
+  comment: {
+    list: CommentProps[]
+    currentPostId: string
+  }
   postList: Object[]
   postCurrentPage: number
+  postCount: number
   isLoading: Boolean
+  scalePic: {
+    currentIndex: number
+    picList: string[]
+    isShow: boolean
+  }
 }
 
 export default createStore<GlobalDataProps>({
@@ -21,11 +49,55 @@ export default createStore<GlobalDataProps>({
     sid: '',
     token: '',
     isShowComment: false,
+    comment: {
+      list: [],
+      currentPostId: '',
+    },
     postList: [],
-    postCurrentPage: 1,
+    postCurrentPage: 0,
+    postCount: 0,
     isLoading: false,
+    scalePic: {
+      currentIndex: 0,
+      picList: [],
+      isShow: false,
+    },
   },
   mutations: {
+    changeCurrentPostId(state, postId) {
+      state.comment.currentPostId = postId
+    },
+    addComments(state, list) {
+      list.forEach((item: CommentProps) => {
+        state.comment.list.push(item)
+      })
+    },
+    addComment(state, comment) {
+      state.comment.list.push(comment)
+    },
+    addReply(state, reply) {
+      const commentId = reply.replyCommentid
+      state.comment.list.forEach((comment) => {
+        if (comment._id === commentId) {
+          comment.reply.push(reply)
+        }
+      })
+      console.log(state.comment.list)
+    },
+    clearComments(state) {
+      state.comment.list = []
+    },
+    setScalePic(state, data) {
+      if (data.isShow === true) {
+        state.scalePic.currentIndex = data.index
+        state.scalePic.picList = data.list
+        state.scalePic.isShow = true
+      } else {
+        state.scalePic.currentIndex = 0
+        state.scalePic.picList = []
+        state.scalePic.isShow = false
+      }
+    },
     changeCommentFlag(state, flag) {
       state.isShowComment = flag
     },
@@ -39,14 +111,19 @@ export default createStore<GlobalDataProps>({
       state.user.isLogin = true
       state.user = { ...state.user, ...userInfo }
     },
-    addPosts(state, list) {
-      list.forEach((item: Object) => {
+    addPosts(state, payload) {
+      payload.list.forEach((item: Object) => {
         state.postList.push(item)
       })
+      state.postCount = payload.count
       console.log(state.postList)
+      console.log(state.postCount)
     },
     addPost(state, post) {
       state.postList.unshift(post)
+    },
+    clearPosts(state) {
+      state.postList = []
     },
     setLoading(state, status) {
       state.isLoading = status

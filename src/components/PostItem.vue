@@ -45,6 +45,7 @@
               class="image-item"
               v-for="(item, index) in post.images"
               :key="index"
+              @click="handleScaleImage(index)"
             >
               <img :src="item" />
             </div>
@@ -63,7 +64,7 @@
               <i class="iconfont">&#xe61f;</i>
               喜欢
             </button>
-            <button class="operate-btn" @click="handleShowComment">
+            <button class="operate-btn" @click="handleShowComment(post._id)">
               <i class="iconfont">&#xe655;</i>
               评论
             </button>
@@ -93,7 +94,7 @@ export default defineComponent({
       type: Object,
     },
   },
-  setup() {
+  setup(prop) {
     const store = useStore()
     const isShowProfileCard = ref(false)
     const changeShowProfileCard = (flag: boolean) => {
@@ -118,8 +119,16 @@ export default defineComponent({
         }
       })
     }
-    const handleShowComment = () => {
+    const handleShowComment = (postId: string) => {
       store.commit('changeCommentFlag', true)
+      store.commit('changeCurrentPostId', postId)
+    }
+    const handleScaleImage = (index: number) => {
+      store.commit('setScalePic', {
+        index,
+        list: prop.post?.images,
+        isShow: true,
+      })
     }
     return {
       isShowProfileCard,
@@ -127,6 +136,7 @@ export default defineComponent({
       handleShowComment,
       showProfileCard,
       profileData,
+      handleScaleImage,
     }
   },
 })

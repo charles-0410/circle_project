@@ -20,6 +20,7 @@ $color-error: #fc4d50 !important;
 $color-error-o: #f56c6c !important;
 
 $shadow-g: 0 1px 3px rgba(26, 26, 26, 0.1);
+$shadow-d: 0 2px 8px rgba(0, 0, 0, 0.1);
 
 $animation: all 0.3s ease-out;
 
@@ -109,7 +110,7 @@ $animation: all 0.3s ease-out;
   align-items: center;
   justify-content: center;
   flex-flow: column nowrap;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.7);
 }
 .Loading-icon {
   color: $color-main;

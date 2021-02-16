@@ -82,7 +82,7 @@ export default defineComponent({
   margin-left: -165px;
   margin-top: 50px;
   padding: 10px 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-d;
   border-left: 4px solid transparent;
   display: flex;
   flex-flow: column nowrap;

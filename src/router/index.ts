@@ -36,15 +36,24 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiredLogin && !store.state.user.isLogin) {
     const token = store.state.token || localStorage.getItem('circleToken')
     if (token) {
-      findUserInfoByToken(token).then((res) => {
-        if (res.data && res.data.code === 200) {
-          const userInfo = res.data.data.user
-          store.commit('changeUserInfo', userInfo)
-          next()
-        } else {
-          next('login')
-        }
-      })
+      findUserInfoByToken(token)
+        .then((res) => {
+          if (res.data && res.data.code === 200) {
+            const userInfo = res.data.data.user
+            store.commit('changeUserInfo', userInfo)
+            next()
+          } else {
+            next('login')
+          }
+        })
+        .catch((err) => {
+          const { message } = err.response.data
+          if (message == 'jwt expired') {
+            // token过期 清除本地保存的token并跳转到登录页
+            localStorage.removeItem('circleToken')
+            next('login')
+          }
+        })
     } else {
       next('login')
     }

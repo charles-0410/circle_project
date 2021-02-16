@@ -11,29 +11,31 @@
             <div class="CommentPopup-main">
               <div class="CommentTopbar">
                 <div class="Topbar-title">
-                  <h3>99 条评论</h3>
+                  <h3>{{ comments.length }} 条评论</h3>
                 </div>
               </div>
               <div class="CommentList">
                 <ul class="CommentList-inner">
-                  <li class="CommentItem">
+                  <li
+                    class="CommentItem"
+                    v-for="(item, index) in comments"
+                    :key="index"
+                  >
                     <div class="userInfo">
                       <div class="userInfo-avatar">
-                        <img src="http://zzy19.cn/tx7.png" class="Avatar">
+                        <img :src="item.userId.avatar_url" class="Avatar" />
                       </div>
                       <div class="userInfo-detail">
-                        <span class="nickName">首席可爱执行官</span>
-                        <p class="headline">
-                          躲起来的星星也在努力发光
-                        </p>
+                        <span class="nickName">{{ item.userId.nickName }}</span>
+                        <p class="headline">躲起来的星星也在努力发光</p>
                       </div>
-                      <div class="timedate">
-                        2020-09-16
-                      </div>
+                      <div class="timedate">2020-09-16</div>
                     </div>
                     <div class="content">
                       <div class="content-inner">
-                        <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
+                        <p>
+                          {{ item.content }}
+                        </p>
                       </div>
                     </div>
                     <div class="footer">
@@ -41,7 +43,10 @@
                         <i class="iconfont">&#xe61f;</i>
                         点赞
                       </button>
-                      <button class="actionButton">
+                      <button
+                        class="actionButton"
+                        @click="handleReply(item._id, item.userId)"
+                      >
                         <i class="iconfont">&#xe62c;</i>
                         回复
                       </button>
@@ -51,24 +56,35 @@
                       </button>
                     </div>
                     <ul class="subCommentList">
-                      <li class="subCommentItem">
+                      <li
+                        class="subCommentItem"
+                        v-for="(subItem, index) in item.reply"
+                        :key="index"
+                      >
                         <div class="userInfo">
                           <div class="userInfo-avatar">
-                            <img src="http://zzy19.cn/tx7.png" class="Avatar">
+                            <img
+                              :src="subItem.userId.avatar_url"
+                              class="Avatar"
+                            />
                           </div>
                           <div class="userInfo-detail">
-                            <span class="nickName">首席可爱执行官</span>
+                            <span class="nickName">{{
+                              subItem.userId.nickName
+                            }}</span>
                             <p class="reply">
-                              回复<span class="replyUser">猪猪琼</span>
+                              回复<span class="replyUser">{{
+                                subItem.replyUserid.nickName
+                              }}</span>
                             </p>
                           </div>
-                          <div class="timedate">
-                            2020-09-16
-                          </div>
+                          <div class="timedate">2020-09-16</div>
                         </div>
                         <div class="content">
                           <div class="content-inner">
-                            <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
+                            <p>
+                              {{ subItem.content }}
+                            </p>
                           </div>
                         </div>
                         <div class="footer">
@@ -76,238 +92,10 @@
                             <i class="iconfont">&#xe61f;</i>
                             点赞
                           </button>
-                          <button class="actionButton">
-                            <i class="iconfont">&#xe62c;</i>
-                            回复
-                          </button>
-                          <button class="actionButton delButton">
-                            <i class="iconfont">&#xe6db;</i>
-                            删除
-                          </button>
-                        </div>
-                      </li>
-                      <!-- <li class="subCommentItem">
-                        <button class="loadMore">
-                          加载更多...
-                        </button>
-                      </li> -->
-                    </ul>
-                  </li>
-                  <li class="CommentItem">
-                    <div class="userInfo">
-                      <div class="userInfo-avatar">
-                        <img src="http://zzy19.cn/tx7.png" class="Avatar">
-                      </div>
-                      <div class="userInfo-detail">
-                        <span class="nickName">首席可爱执行官</span>
-                        <p class="headline">
-                          躲起来的星星也在努力发光
-                        </p>
-                      </div>
-                      <div class="timedate">
-                        2020-09-16
-                      </div>
-                    </div>
-                    <div class="content">
-                      <div class="content-inner">
-                        <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
-                      </div>
-                    </div>
-                    <div class="footer">
-                      <button class="actionButton">
-                        <i class="iconfont">&#xe61f;</i>
-                        点赞
-                      </button>
-                      <button class="actionButton">
-                        <i class="iconfont">&#xe62c;</i>
-                        回复
-                      </button>
-                      <button class="actionButton delButton">
-                        <i class="iconfont">&#xe6db;</i>
-                        删除
-                      </button>
-                    </div>
-                    <ul class="subCommentList">
-                      <li class="subCommentItem">
-                        <div class="userInfo">
-                          <div class="userInfo-avatar">
-                            <img src="http://zzy19.cn/tx7.png" class="Avatar">
-                          </div>
-                          <div class="userInfo-detail">
-                            <span class="nickName">首席可爱执行官</span>
-                            <p class="reply">
-                              回复<span class="replyUser">猪猪琼</span>
-                            </p>
-                          </div>
-                          <div class="timedate">
-                            2020-09-16
-                          </div>
-                        </div>
-                        <div class="content">
-                          <div class="content-inner">
-                            <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
-                          </div>
-                        </div>
-                        <div class="footer">
-                          <button class="actionButton">
-                            <i class="iconfont">&#xe61f;</i>
-                            点赞
-                          </button>
-                          <button class="actionButton">
-                            <i class="iconfont">&#xe62c;</i>
-                            回复
-                          </button>
-                          <button class="actionButton delButton">
-                            <i class="iconfont">&#xe6db;</i>
-                            删除
-                          </button>
-                        </div>
-                      </li>
-                      <!-- <li class="subCommentItem">
-                        <button class="loadMore">
-                          加载更多...
-                        </button>
-                      </li> -->
-                    </ul>
-                  </li>
-                  <li class="CommentItem">
-                    <div class="userInfo">
-                      <div class="userInfo-avatar">
-                        <img src="http://zzy19.cn/tx7.png" class="Avatar">
-                      </div>
-                      <div class="userInfo-detail">
-                        <span class="nickName">首席可爱执行官</span>
-                        <p class="headline">
-                          躲起来的星星也在努力发光
-                        </p>
-                      </div>
-                      <div class="timedate">
-                        2020-09-16
-                      </div>
-                    </div>
-                    <div class="content">
-                      <div class="content-inner">
-                        <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
-                      </div>
-                    </div>
-                    <div class="footer">
-                      <button class="actionButton">
-                        <i class="iconfont">&#xe61f;</i>
-                        点赞
-                      </button>
-                      <button class="actionButton">
-                        <i class="iconfont">&#xe62c;</i>
-                        回复
-                      </button>
-                      <button class="actionButton delButton">
-                        <i class="iconfont">&#xe6db;</i>
-                        删除
-                      </button>
-                    </div>
-                    <ul class="subCommentList">
-                      <li class="subCommentItem">
-                        <div class="userInfo">
-                          <div class="userInfo-avatar">
-                            <img src="http://zzy19.cn/tx7.png" class="Avatar">
-                          </div>
-                          <div class="userInfo-detail">
-                            <span class="nickName">首席可爱执行官</span>
-                            <p class="reply">
-                              回复<span class="replyUser">猪猪琼</span>
-                            </p>
-                          </div>
-                          <div class="timedate">
-                            2020-09-16
-                          </div>
-                        </div>
-                        <div class="content">
-                          <div class="content-inner">
-                            <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
-                          </div>
-                        </div>
-                        <div class="footer">
-                          <button class="actionButton">
-                            <i class="iconfont">&#xe61f;</i>
-                            点赞
-                          </button>
-                          <button class="actionButton">
-                            <i class="iconfont">&#xe62c;</i>
-                            回复
-                          </button>
-                          <button class="actionButton delButton">
-                            <i class="iconfont">&#xe6db;</i>
-                            删除
-                          </button>
-                        </div>
-                      </li>
-                      <!-- <li class="subCommentItem">
-                        <button class="loadMore">
-                          加载更多...
-                        </button>
-                      </li> -->
-                    </ul>
-                  </li>
-                  <li class="CommentItem">
-                    <div class="userInfo">
-                      <div class="userInfo-avatar">
-                        <img src="http://zzy19.cn/tx7.png" class="Avatar">
-                      </div>
-                      <div class="userInfo-detail">
-                        <span class="nickName">首席可爱执行官</span>
-                        <p class="headline">
-                          躲起来的星星也在努力发光
-                        </p>
-                      </div>
-                      <div class="timedate">
-                        2020-09-16
-                      </div>
-                    </div>
-                    <div class="content">
-                      <div class="content-inner">
-                        <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
-                      </div>
-                    </div>
-                    <div class="footer">
-                      <button class="actionButton">
-                        <i class="iconfont">&#xe61f;</i>
-                        点赞
-                      </button>
-                      <button class="actionButton">
-                        <i class="iconfont">&#xe62c;</i>
-                        回复
-                      </button>
-                      <button class="actionButton delButton">
-                        <i class="iconfont">&#xe6db;</i>
-                        删除
-                      </button>
-                    </div>
-                    <ul class="subCommentList">
-                      <li class="subCommentItem">
-                        <div class="userInfo">
-                          <div class="userInfo-avatar">
-                            <img src="http://zzy19.cn/tx7.png" class="Avatar">
-                          </div>
-                          <div class="userInfo-detail">
-                            <span class="nickName">首席可爱执行官</span>
-                            <p class="reply">
-                              回复<span class="replyUser">猪猪琼</span>
-                            </p>
-                          </div>
-                          <div class="timedate">
-                            2020-09-16
-                          </div>
-                        </div>
-                        <div class="content">
-                          <div class="content-inner">
-                            <p>那你先吧html的模板先写出来，css不懂的话，你可以大概看一下css的盒子模型，以及怎么布局，先大概做出来，不要因为老师不教，你就不写，现在网络很多资料</p>
-                          </div>
-                        </div>
-                        <div class="footer">
-                          <button class="actionButton">
-                            <i class="iconfont">&#xe61f;</i>
-                            点赞
-                          </button>
-                          <button class="actionButton">
+                          <button
+                            class="actionButton"
+                            @click="handleReply(item._id, subItem.userId)"
+                          >
                             <i class="iconfont">&#xe62c;</i>
                             回复
                           </button>
@@ -328,7 +116,16 @@
               </div>
               <div class="CommentFooter">
                 <div class="CommentEditor">
-                  <input type="text" class="CommentEditor-input" placeholder="说点什么...">
+                  <input
+                    type="text"
+                    class="CommentEditor-input"
+                    :placeholder="
+                      commentData.replyUser.userName === ''
+                        ? '说点什么...'
+                        : '回复 ' + commentData.replyUser.userName
+                    "
+                    v-model="commentData.content"
+                  />
                   <div class="CommentEditor-tools">
                     <button class="tools-button">
                       <i class="iconfont">&#xe75d;</i>
@@ -338,11 +135,12 @@
                     </button>
                   </div>
                 </div>
-                <button class="CommentSubmit">
+                <button class="CommentSubmit" @click="handleSubmit">
                   发表
                 </button>
               </div>
             </div>
+            <Loading v-show="isShowLoading" text="拼命加载中..." />
           </div>
         </div>
       </transition>
@@ -351,21 +149,160 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, reactive, ref, watch, inject } from 'vue'
 import { useStore } from 'vuex'
+import Loading from './Loading.vue'
+import { fetchCommentsByPostid, createComment } from '../api/comments'
+import { UserInfo } from '../store'
+
+interface CommentParams {
+  content: string
+  userId: string
+  postId: string
+  isReply?: string
+  replyCommentid?: string
+  replyUserid?: string
+}
 
 export default defineComponent({
-  setup () {
+  setup() {
     const store = useStore()
+    const Alert = inject('Alert')
     const isShow = computed(() => store.state.isShowComment)
+    const comments = computed(() => store.state.comment.list)
+    const isShowLoading = ref<boolean>(false)
+    const commentData = reactive({
+      content: '',
+      replyCommentId: '',
+      replyUser: {
+        id: '',
+        userName: '',
+      },
+    })
+
     const handleClose = () => {
       store.commit('changeCommentFlag', false)
     }
+
+    watch(
+      () => store.state.comment.currentPostId,
+      () => {
+        _getComments()
+      }
+    )
+
+    // 请求评论列表数据
+    const _getComments = () => {
+      store.commit('clearComments')
+      const postId = store.state.comment.currentPostId
+      if (postId === '') {
+        return
+      }
+      isShowLoading.value = true
+      fetchCommentsByPostid(postId).then((res) => {
+        const result = res.data
+        console.log(result)
+        if (result && result.code === 200) {
+          const comments = result.data
+          if (comments.length > 0) {
+            // 处理评论回复数据
+            const reply = result.reply
+            for (let i = 0; i < comments.length; i++) {
+              comments[i].reply = reply[i]
+            }
+            console.log(comments)
+            store.commit('addComments', comments)
+          }
+        }
+        isShowLoading.value = false
+      })
+    }
+
+    // 处理回复评论
+    const handleReply = (commentId: string, userInfo: UserInfo) => {
+      commentData.replyCommentId = commentId
+      commentData.replyUser.userName = userInfo.nickName
+      commentData.replyUser.id = userInfo._id
+    }
+
+    // 提交评论信息
+    const handleSubmit = () => {
+      const content = commentData.content
+      if (content === '') {
+        Alert({
+          type: 'error',
+          msg: '评论内容不能为空',
+        })
+        return
+      }
+      const userId = store.state.user._id
+      const postId = store.state.comment.currentPostId
+      const replyCommentid = commentData.replyCommentId
+      const replyUserid = commentData.replyUser.id
+      if (userId !== '' && postId !== '') {
+        const params: CommentParams = {
+          isReply: '0',
+          content,
+          userId,
+          postId,
+        }
+        if (replyCommentid !== '' && replyUserid !== '') {
+          params.isReply = '1'
+          params.replyCommentid = replyCommentid
+          params.replyUserid = replyUserid
+        }
+        createComment(params).then((res) => {
+          console.log(res)
+          const result = res.data
+          if (result && result.code === 200) {
+            const comment = result.data
+            if (comment.isReply === '0') {
+              // 是评论
+              store.commit('addComment', comment)
+            } else if (comment.isReply === '1') {
+              // 是回复
+              store.commit('addReply', comment)
+            }
+            resetCommentData()
+            Alert({
+              type: 'success',
+              msg: '评论成功！',
+            })
+          } else {
+            Alert({
+              type: 'error',
+              msg: '评论失败！',
+            })
+          }
+        })
+      } else {
+        Alert({
+          type: 'error',
+          msg: '系统出错，请重试！',
+        })
+      }
+    }
+    // 重置评论操作
+    const resetCommentData = () => {
+      ;(commentData.content = ''),
+        (commentData.replyCommentId = ''),
+        (commentData.replyUser.id = ''),
+        (commentData.replyUser.userName = '')
+    }
     return {
       handleClose,
-      isShow
+      isShow,
+      comments,
+      isShowLoading,
+      commentData,
+      handleSubmit,
+      handleReply,
+      resetCommentData,
     }
-  }
+  },
+  components: {
+    Loading,
+  },
 })
 </script>
 
@@ -403,7 +340,8 @@ export default defineComponent({
     overflow-x: hidden;
     .CommentList-inner {
       .CommentItem {
-        padding: 10px 20px;
+        padding: 10px 0;
+        margin: 0 20px;
         border-bottom: 1px solid $color-gray-line-s;
         .userInfo {
           display: flex;

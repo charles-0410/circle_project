@@ -142,8 +142,21 @@ export default defineComponent({
               msg: `登录失败，请重试！`,
             })
           })
+      } else {
+        Alert({
+          type: 'error',
+          msg: '登录信息不能为空',
+        })
       }
     }
+    // 按下回车键触发登录
+    onMounted(() => {
+      document.onkeydown = function (e) {
+        if (e.keyCode === 13) {
+          handleSubmit()
+        }
+      }
+    })
     return {
       isShow,
       captchaSVG,

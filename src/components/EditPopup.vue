@@ -47,21 +47,37 @@
                   </ul>
                 </div>
                 <div class="TopicTags">
-                  <div class="TopicTags-Tag active">
+                  <div
+                    class="TopicTags-Tag"
+                    v-for="item in topicData.hotList"
+                    :key="item._id"
+                    :class="post.topic === item._id ? 'active' : ''"
+                    @click="changeCurrentTopic(item)"
+                  >
                     <i class="iconfont">&#xe8b1;</i>
-                    <span class="TopicTags-TagName">分享美食</span>
+                    <span class="TopicTags-TagName">{{ item.title }}</span>
                   </div>
-                  <div class="TopicTags-Tag">
-                    <i class="iconfont">&#xe8b1;</i>
-                    <span class="TopicTags-TagName">分享风景</span>
-                  </div>
-                  <div class="TopicTags-Tag">
-                    <i class="iconfont">&#xe8b1;</i>
-                    <span class="TopicTags-TagName">心灵鸡汤</span>
-                  </div>
-                  <div class="TopicTags-Tag TopicTags-moreButton">
+                  <div
+                    class="TopicTags-Tag TopicTags-moreButton"
+                    @click="changeMorePopupShow(true)"
+                  >
                     <span class="TopicTags-TagName">更多</span>
                     <i class="iconfont">&#xe601;</i>
+                  </div>
+                  <div class="TopicsPopup" v-show="topicData.isShowMorePopup">
+                    <ul class="TopicsPopup-list">
+                      <li
+                        class="TopicsPopup-item"
+                        v-for="topicItem in topicData.moreList"
+                        :key="topicItem._id"
+                        @click="changeCurrentTopic(topicItem, true)"
+                      >
+                        <i class="iconfont">&#xe8b1;</i>
+                        <span class="TopicsPopup-TagName">
+                          {{ topicItem.title }}
+                        </span>
+                      </li>
+                    </ul>
                   </div>
                 </div>
                 <div class="ToolsRow">
@@ -99,11 +115,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, inject, watch } from 'vue'
+import { defineComponent, reactive, ref, inject, watch, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import Loading from './Loading.vue'
 import { uploadPic } from '../api/uploadPic'
 import { createPost } from '../api/posts'
+import { fetchTopics } from '../api/topics'
 
 interface Post {
   content: string
@@ -112,6 +129,12 @@ interface Post {
   sharePicNum: number
   sharePicFileList: object[]
   sharePicUrlList: string[]
+}
+interface TopicData {
+  list: object[]
+  hotList: object[]
+  moreList: object[]
+  isShowMorePopup: boolean
 }
 
 export default defineComponent({
@@ -125,9 +148,13 @@ export default defineComponent({
     const store = useStore()
     const Alert = inject('Alert')
 
+    onMounted(() => {
+      _getTopics()
+    })
+
     const post = reactive<Post>({
       content: '',
-      topic: '600d430b1bd6a64a84a492ba',
+      topic: '',
       images: [],
       sharePicNum: 0,
       sharePicFileList: [],
@@ -136,6 +163,51 @@ export default defineComponent({
     const handleClose = () => {
       context.emit('handleClose')
     }
+
+    // 话题处理
+    const topicData: TopicData = reactive({
+      list: [],
+      hotList: [],
+      moreList: [],
+      isShowMorePopup: false,
+    })
+    const _getTopics = () => {
+      fetchTopics().then((res) => {
+        const result = res.data
+        if (result && result.code === 200) {
+          const topics = result.data
+          console.log(topics)
+          topicData.list = topics
+          topicData.hotList = topics.slice(0, 3)
+          topicData.moreList = topics.slice(3)
+          post.topic = topics[0]._id
+        }
+      })
+    }
+    const changeCurrentTopic = (
+      item: { _id: string },
+      isMore: boolean = false
+    ) => {
+      if (isMore === true) {
+        const hotFist = topicData.hotList[0]
+        topicData.hotList[0] = item
+        topicData.moreList.forEach((topic) => {
+          if (topic._id === item._id) {
+            topic = hotFist
+            //TODO: BUG 替换不成功
+            // console.log(topic)
+            // console.log(hotFist)
+            // console.log(topicData.moreList)
+          }
+        })
+        changeMorePopupShow(false)
+      }
+      post.topic = item._id
+    }
+    const changeMorePopupShow = (flag: boolean) => {
+      topicData.isShowMorePopup = flag
+    }
+
     const isShowImageList = ref(false)
     const handleUploadPic = () => {
       isShowImageList.value = !isShowImageList.value
@@ -303,6 +375,9 @@ export default defineComponent({
       imagesChange,
       handleUploadPicClick,
       handleDeleteImage,
+      topicData,
+      changeCurrentTopic,
+      changeMorePopupShow,
     }
   },
   components: {
@@ -411,6 +486,7 @@ export default defineComponent({
       }
     }
     .TopicTags {
+      position: relative;
       display: flex;
       margin: 20px 0 10px 0;
       height: 30px;
@@ -443,6 +519,50 @@ export default defineComponent({
         }
         i {
           font-size: 12px;
+        }
+      }
+      .TopicsPopup {
+        position: absolute;
+        width: 400px;
+        height: 180px;
+        background-color: $color-white;
+        border-radius: 3px;
+        box-shadow: $shadow-d;
+        top: -150px;
+        right: 0;
+        padding: 15px;
+        box-sizing: border-box;
+        .TopicsPopup-list {
+          display: flex;
+          flex-wrap: wrap;
+          overflow-y: scroll;
+          // height: 100%;
+          max-height: 150px;
+          .TopicsPopup-item {
+            text-align: center;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 12px;
+            margin-right: 10px;
+            margin-bottom: 8px;
+            border-radius: 20px;
+            color: $color-gray-text;
+            background-color: $color-gray-bg;
+            transition: $animation;
+            user-select: none;
+            cursor: pointer;
+            &:hover {
+              color: $color-main;
+              background-color: $color-main-o;
+            }
+            &.active {
+              color: $color-white;
+              background-color: $color-main;
+            }
+            .TopicsPopup-TagName {
+              padding-left: 3px;
+            }
+          }
         }
       }
     }

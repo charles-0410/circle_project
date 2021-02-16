@@ -2,9 +2,12 @@
   <div v-show="isShow" class="Modal-wrapper">
     <div class="Modal-backMask" @click="handleCloseClick" />
     <div class="Modal">
+      <div class="Modal-closeButton" @click="handleCloseClick">
+        <i class="iconfont">&#xe654;</i>
+      </div>
       <div class="ImageView">
         <div class="ImageView-main">
-          <img :src="imageList[currentImage]">
+          <img :src="imageList[currentImage]" />
           <div v-show="isShowTips" class="ImageView-tips">
             <span>已经是最后一张了</span>
           </div>
@@ -18,14 +21,20 @@
               :class="currentImage === index ? 'active' : ''"
               @click="handleImageClick(index)"
             >
-              <img :src="item">
+              <img :src="item" />
             </li>
           </ul>
         </div>
-        <div class="ImageView-Button ImageView-Button-L" @click="handleLeftClick">
+        <div
+          class="ImageView-Button ImageView-Button-L"
+          @click="handleLeftClick"
+        >
           <i class="iconfont">&#xe63b;</i>
         </div>
-        <div class="ImageView-Button ImageView-Button-R" @click="handleRightClick">
+        <div
+          class="ImageView-Button ImageView-Button-R"
+          @click="handleRightClick"
+        >
           <i class="iconfont">&#xe601;</i>
         </div>
       </div>
@@ -34,23 +43,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { computed, defineComponent, ref, watch } from 'vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
-  props: {
-    isShow: {
-      type: Boolean,
-      default: false
-    }
-  },
-  setup (prop, context) {
-    const imageList = ref([
-      'http://zzy19.cn/ms1.jpg',
-      'http://zzy19.cn/ms2.jpg',
-      'http://zzy19.cn/ms3.jpg',
-      'http://zzy19.cn/ms4.jpg'
-    ])
+  // props: {
+  //   isShow: {
+  //     type: Boolean,
+  //     default: false,
+  //   },
+  // },
+  setup(prop) {
+    const store = useStore()
+
+    const imageList = computed(() => store.state.scalePic.picList)
+    const isShow = computed(() => store.state.scalePic.isShow)
+
     const currentImage = ref(0)
+    // 获取用户点击图片的下标
+    watch(
+      () => store.state.scalePic.currentIndex,
+      () => {
+        currentImage.value = store.state.scalePic.currentIndex
+      }
+    )
+
     // 图片列表点击事件
     const handleImageClick = (i: number) => {
       currentImage.value = i
@@ -85,18 +102,21 @@ export default defineComponent({
     }
     // 关闭事件
     const handleCloseClick = () => {
-      context.emit('handleClose')
+      // context.emit('handleClose')
+
+      store.commit('setScalePic', { isShow: false })
     }
     return {
+      isShow,
       imageList,
       currentImage,
       handleImageClick,
       handleLeftClick,
       handleRightClick,
       isShowTips,
-      handleCloseClick
+      handleCloseClick,
     }
-  }
+  },
 })
 </script>
 
@@ -178,7 +198,7 @@ export default defineComponent({
     cursor: pointer;
     transition: $animation;
     &:hover {
-      background-color: rgba(0, 0, 0, .5);
+      background-color: rgba(0, 0, 0, 0.5);
       i {
         background-color: transparent;
       }
@@ -190,7 +210,7 @@ export default defineComponent({
       text-align: center;
       color: $color-white;
       font-size: 40px;
-      background-color: rgba(0, 0, 0, .5);
+      background-color: rgba(0, 0, 0, 0.5);
       border-radius: 50%;
       transition: $animation;
     }

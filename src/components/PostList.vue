@@ -9,7 +9,7 @@
         暂无帖子
       </div>
     </div>
-    <Loading v-show="false" />
+    <Loading v-show="isLoading" />
     <div class="LoadMore" v-show="isLoadMore">
       <div class="LoadMore-inner">
         <div class="LoadMore-tips">
@@ -24,7 +24,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { computed, defineComponent, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import PostItem from './PostItem.vue'
 import Loading from './Loading.vue'
@@ -35,10 +35,15 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    isLoading: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup() {
     const store = useStore()
     const posts = computed(() => store.state.postList)
+
     return {
       posts,
     }
