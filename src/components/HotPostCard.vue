@@ -4,43 +4,43 @@
       <h3 class="HotPostCard-title">
         <i class="iconfont">&#xe67b;</i>热门帖子
       </h3>
-      <ul class="HotPostCard-list">
-        <li class="HotPostCard-item">
+      <ul class="HotPostCard-list" v-if="hotPosts">
+        <li
+          class="HotPostCard-item"
+          v-for="(item, index) in hotPosts"
+          :key="index"
+        >
           <div class="item-content">
-            <p>时间并没有改变人生的属性 但是它给了我们再来一次的念想 再见，2020 未来不一定会更好，但是 2021 一定是你我新的篇章 愿你我不再负重前行，轻装简从</p>
+            <p>{{ item.content }}</p>
           </div>
-          <div class="item-image">
-            <img src="http://zzy19.cn/ms2.jpg">
-          </div>
-        </li>
-        <li class="HotPostCard-item">
-          <div class="item-content">
-            <p>时间并没有改变人生的属性 但是它给了我们再来一次的念想 再见，2020 未来不一定会更好，但是 2021 一定是你我新的篇章 愿你我不再负重前行，轻装简从</p>
-          </div>
-          <div class="item-image">
-            <img src="http://zzy19.cn/ms1.jpg">
-          </div>
-        </li>
-        <li class="HotPostCard-item">
-          <div class="item-content">
-            <p>时间并没有改变人生的属性 但</p>
-          </div>
-          <div class="item-image">
-            <img src="http://zzy19.cn/ms3.jpg">
+          <div class="item-image" v-if="item.images.length > 0">
+            <img :src="item.images[0]" />
           </div>
         </li>
       </ul>
+      <div class="HotPostCard-empty" v-else>
+        <Loading />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import Loading from './Loading.vue'
 
 export default defineComponent({
-  setup () {
+  props: {
+    hotPosts: {
+      type: Array,
+    },
+  },
+  setup() {
     return {}
-  }
+  },
+  components: {
+    Loading,
+  },
 })
 </script>
 
@@ -50,6 +50,7 @@ export default defineComponent({
 .HotPostCard {
   margin-top: 10px;
   .HotPostCard-inner {
+    position: relative;
     padding: 10px 12px;
     .HotPostCard-title {
       font-size: 15px;
@@ -96,6 +97,10 @@ export default defineComponent({
           }
         }
       }
+    }
+    .HotPostCard-empty {
+      width: 100%;
+      height: 195px;
     }
   }
 }

@@ -25,8 +25,19 @@
           </p>
         </div>
         <div class="head-r">
-          <button class="follow-btn">
+          <button
+            class="follow-btn"
+            v-if="!post.isFollow"
+            @click="handleFollowUser(post.user._id)"
+          >
             <i class="iconfont">&#xe64d;</i>关注
+          </button>
+          <button
+            class="follow-btn isFollow"
+            v-else
+            @click="handleUnFollowUser(post.user._id)"
+          >
+            已关注
           </button>
         </div>
       </div>
@@ -36,7 +47,7 @@
             <span>{{ post.content }}</span>
           </div>
         </div>
-        <div class="image-row">
+        <div class="image-row" v-show="post.images.length > 0">
           <div
             class="image-box"
             :class="post.images.length > 1 ? 'col-3' : 'col-1'"
@@ -60,13 +71,25 @@
         </div>
         <div class="operate-row">
           <div class="operate-wrap">
-            <button class="operate-btn">
+            <button
+              class="operate-btn"
+              v-if="!post.isLiking"
+              @click="handleLikingPost(post._id)"
+            >
               <i class="iconfont">&#xe61f;</i>
-              喜欢
+              点赞 {{ post.likingCount > 0 ? post.likingCount : '' }}
+            </button>
+            <button
+              class="operate-btn isLiking"
+              v-else
+              @click="handleUnLikingPost(post._id)"
+            >
+              <i class="iconfont">&#xe663;</i>
+              已赞 {{ post.likingCount > 0 ? post.likingCount : '' }}
             </button>
             <button class="operate-btn" @click="handleShowComment(post._id)">
               <i class="iconfont">&#xe655;</i>
-              评论
+              评论 {{ post.CommentCount > 0 ? post.CommentCount : '' }}
             </button>
             <button class="operate-btn">
               <i class="iconfont">&#xe635;</i>
@@ -80,10 +103,17 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, inject } from 'vue'
 import { useStore } from 'vuex'
+import { UserInfo } from '../store'
 import ProfileCard from './ProfileCard.vue'
-import { findUserInfoByUserid } from '../api/users'
+import {
+  findUserInfoByUserid,
+  followUser,
+  unFollowUser,
+  likingPost,
+  unLikingPost,
+} from '../api/users'
 
 export default defineComponent({
   components: {
@@ -96,11 +126,12 @@ export default defineComponent({
   },
   setup(prop) {
     const store = useStore()
+    const Alert = inject('Alert')
     const isShowProfileCard = ref(false)
     const changeShowProfileCard = (flag: boolean) => {
       isShowProfileCard.value = flag
     }
-    const profileData = ref<object>({})
+    const profileData = ref<UserInfo | null>(null)
     const showProfileCard = (userId: string) => {
       changeShowProfileCard(true)
       // 判断是否已经请求过用户信息数据(避免频繁重复请求)
@@ -115,7 +146,10 @@ export default defineComponent({
         console.log(res)
         const result = res.data
         if (result && result.code === 200) {
-          profileData.value = result.data
+          const userInfo = result.data.userInfo
+          userInfo.isFollow = result.data.isFollow
+          profileData.value = userInfo
+          console.log(profileData.value)
         }
       })
     }
@@ -130,6 +164,69 @@ export default defineComponent({
         isShow: true,
       })
     }
+    // 关注用户
+    const handleFollowUser = (userId: string) => {
+      const myId = store.state.user._id
+      if (userId === myId) {
+        Alert({ type: 'error', msg: '不可以关注自己！' })
+        return
+      }
+      followUser(userId)
+        .then((res) => {
+          if (res.status === 204) {
+            if (profileData.value?._id === userId) {
+              profileData.value.isFollow = true
+            }
+            store.commit('changeFollowStatus', { userId, isFollow: true })
+            Alert({ type: 'success', msg: '关注成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'error', msg: '关注失败，请重试！' })
+        })
+    }
+    // 取消关注用户
+    const handleUnFollowUser = (userId: string) => {
+      unFollowUser(userId)
+        .then((res) => {
+          if (res.status === 204) {
+            if (profileData.value?._id === userId) {
+              profileData.value.isFollow = false
+            }
+            store.commit('changeFollowStatus', { userId, isFollow: false })
+            Alert({ type: 'success', msg: '取消关注成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'error', msg: '取消关注失败，请重试！' })
+        })
+    }
+    // 点赞帖子
+    const handleLikingPost = (postId: string) => {
+      likingPost(postId)
+        .then((res) => {
+          if (res.status === 204) {
+            store.commit('changeLikingStatus', { postId, isLiking: true })
+            Alert({ type: 'success', msg: '点赞成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'error', msg: '点赞失败！' })
+        })
+    }
+    // 取消点赞帖子
+    const handleUnLikingPost = (postId: string) => {
+      unLikingPost(postId)
+        .then((res) => {
+          if (res.status === 204) {
+            store.commit('changeLikingStatus', { postId, isLiking: false })
+            Alert({ type: 'success', msg: '取消点赞成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'success', msg: '取消点赞失败！' })
+        })
+    }
     return {
       isShowProfileCard,
       changeShowProfileCard,
@@ -137,6 +234,10 @@ export default defineComponent({
       showProfileCard,
       profileData,
       handleScaleImage,
+      handleFollowUser,
+      handleUnFollowUser,
+      handleLikingPost,
+      handleUnLikingPost,
     }
   },
 })
@@ -210,6 +311,13 @@ export default defineComponent({
             color: $color-main;
             background-color: $color-main-o;
           }
+          &.isFollow {
+            color: $color-white;
+            background-color: $color-main;
+            &:hover {
+              background-color: $color-error;
+            }
+          }
         }
       }
     }
@@ -282,6 +390,7 @@ export default defineComponent({
           align-items: center;
           .operate-btn {
             color: $color-gray-text;
+            min-width: 64px;
             padding: 0 8px;
             font-size: 14px;
             line-height: 35px;
@@ -289,6 +398,9 @@ export default defineComponent({
             transition: $animation;
             &:hover {
               color: $color-main;
+            }
+            &.isLiking {
+              color: $color-error;
             }
           }
           .operate-btn-bg {

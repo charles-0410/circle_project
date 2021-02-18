@@ -1,12 +1,32 @@
 import { createStore } from 'vuex'
 
+export interface UserRecord {
+  fansCount: number
+  followingCount: number
+  releaseCount: number
+}
 export interface UserInfo {
-  avatar_url: string
-  createdAt: string
-  nickName: string
-  updatedAt: string
-  userId: string
+  avatar_url?: string
+  createdAt?: string
+  nickName?: string
+  updatedAt?: string
+  userId?: string
+  _id?: string
+  isFollow?: boolean
+  userRecord?: UserRecord
+}
+export interface PostProps {
   _id: string
+  content: string
+  createdAt: string
+  updatedAt: string
+  images: string[]
+  topic: object
+  user: UserInfo
+  isFollow: boolean
+  isLiking: boolean
+  CommentCount: number
+  likingCount: number
 }
 export interface UserProps {
   isLogin: Boolean
@@ -22,7 +42,7 @@ export interface CommentProps {
   _id: string
 }
 export interface GlobalDataProps {
-  user: UserProps
+  user: UserProps & UserInfo
   token: String
   sid: String
   isShowComment: Boolean
@@ -30,7 +50,7 @@ export interface GlobalDataProps {
     list: CommentProps[]
     currentPostId: string
   }
-  postList: Object[]
+  postList: PostProps[]
   postCurrentPage: number
   postCount: number
   isLoading: Boolean
@@ -54,7 +74,7 @@ export default createStore<GlobalDataProps>({
       currentPostId: '',
     },
     postList: [],
-    postCurrentPage: 0,
+    postCurrentPage: 1,
     postCount: 0,
     isLoading: false,
     scalePic: {
@@ -64,6 +84,30 @@ export default createStore<GlobalDataProps>({
     },
   },
   mutations: {
+    changeLikingStatus(state, payload) {
+      const postId = payload.postId
+      const isLiking = payload.isLiking
+      state.postList.forEach((post: PostProps) => {
+        if (post._id === postId) {
+          post.isLiking = isLiking
+          // 修改点赞数量
+          if (isLiking === true) {
+            post.likingCount++
+          } else if (isLiking === false) {
+            post.likingCount--
+          }
+        }
+      })
+    },
+    changeFollowStatus(state, payload) {
+      const userId = payload.userId
+      const isFollow = payload.isFollow
+      state.postList.forEach((post: PostProps) => {
+        if (post.user._id === userId) {
+          post.isFollow = isFollow
+        }
+      })
+    },
     changeCurrentPostId(state, postId) {
       state.comment.currentPostId = postId
     },
@@ -112,7 +156,7 @@ export default createStore<GlobalDataProps>({
       state.user = { ...state.user, ...userInfo }
     },
     addPosts(state, payload) {
-      payload.list.forEach((item: Object) => {
+      payload.list.forEach((item: PostProps) => {
         state.postList.push(item)
       })
       state.postCount = payload.count

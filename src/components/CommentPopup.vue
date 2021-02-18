@@ -50,7 +50,10 @@
                         <i class="iconfont">&#xe62c;</i>
                         回复
                       </button>
-                      <button class="actionButton delButton">
+                      <button
+                        class="actionButton delButton"
+                        style="display: none"
+                      >
                         <i class="iconfont">&#xe6db;</i>
                         删除
                       </button>
@@ -99,7 +102,10 @@
                             <i class="iconfont">&#xe62c;</i>
                             回复
                           </button>
-                          <button class="actionButton delButton">
+                          <button
+                            class="actionButton delButton"
+                            style="display: none"
+                          >
                             <i class="iconfont">&#xe6db;</i>
                             删除
                           </button>
@@ -387,9 +393,8 @@ export default defineComponent({
           }
         }
         .footer {
-          margin-top: 6px;
+          margin-top: 8px;
           padding: 0 15px 0 55px;
-
           .actionButton {
             line-height: 24px;
             padding: 0 6px;

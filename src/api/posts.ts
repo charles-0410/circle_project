@@ -12,6 +12,13 @@ export const fetchPosts = (page?: number) => {
 }
 
 /**
+ * 获取热门帖子
+ */
+export const fetchHotPosts = () => {
+  return axios.get('/api/posts/hot')
+}
+
+/**
  * 创建帖子
  * @param postInfo 帖子内容
  */

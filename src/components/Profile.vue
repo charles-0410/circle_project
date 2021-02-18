@@ -18,15 +18,17 @@
       <ul class="userRecord-list">
         <li class="userRecord-item">
           <span class="title">发表</span>
-          <span class="count">99</span>
+          <span class="count">{{ userInfo.userRecord.releaseCount || 0 }}</span>
         </li>
         <li class="userRecord-item">
           <span class="title">关注</span>
-          <span class="count">9</span>
+          <span class="count">{{
+            userInfo.userRecord.followingCount || 0
+          }}</span>
         </li>
         <li class="userRecord-item">
           <span class="title">粉丝</span>
-          <span class="count">999</span>
+          <span class="count">{{ userInfo.userRecord.fansCount || 0 }}</span>
         </li>
       </ul>
     </div>

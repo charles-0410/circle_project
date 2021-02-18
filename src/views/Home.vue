@@ -32,7 +32,7 @@
             <Profile />
           </div>
           <div class="hotPostCard shadow">
-            <HotPostCard />
+            <HotPostCard :hotPosts="hotPosts" />
           </div>
           <div class="noticeCard shadow">
             <NoticeCard />
@@ -49,6 +49,7 @@
       @handleClose="changeImageViewFlag(false)"
     />
     <CommentPopup />
+    <ModifyUserInfo v-show="false" />
   </div>
 </template>
 
@@ -63,19 +64,10 @@ import NoticeCard from '../components/NoticeCard.vue'
 import EditPopup from '../components/EditPopup.vue'
 import ImageView from '../components/ImageView.vue'
 import CommentPopup from '../components/CommentPopup.vue'
-import { fetchPosts } from '../api/posts'
+import ModifyUserInfo from '../components/ModifyUserInfo.vue'
+import { fetchPosts, fetchHotPosts } from '../api/posts'
 
 export default defineComponent({
-  components: {
-    Header,
-    PostList,
-    Profile,
-    HotPostCard,
-    NoticeCard,
-    EditPopup,
-    ImageView,
-    CommentPopup,
-  },
   setup() {
     const store = useStore()
     const Alert = inject('Alert')
@@ -93,7 +85,7 @@ export default defineComponent({
       if (isFirst) {
         store.commit('setLoading', true)
       }
-      await fetchPosts()
+      await fetchPosts(1)
         .then((res) => {
           const result = res.data
           if (result && result.code === 200) {
@@ -112,6 +104,17 @@ export default defineComponent({
           store.commit('setLoading', false)
         })
       return true
+    }
+    // 获取热门帖子列表
+    const hotPosts = ref<object[] | null>(null)
+    const _fetchHotPosts = () => {
+      fetchHotPosts().then((res) => {
+        console.log(res)
+        const result = res.data
+        if (result && result.code === 200) {
+          hotPosts.value = result.data
+        }
+      })
     }
     // 处理侧边栏定位问题
     const SideBar = ref<HTMLElement | null>(null)
@@ -149,19 +152,28 @@ export default defineComponent({
         const result = res.data
         if (result && result.code === 200) {
           const list = result.data.list
+          if (list.length === 0) {
+            // 数据库帖子已加载完
+            Alert({
+              type: 'success',
+              msg: '已加载完，没有更多帖子咯！',
+            })
+            isLoadMore.value = false
+            return
+          }
           const count = result.data.count
           store.commit('addPosts', { list, count })
           store.commit('changePostCurrentPage', page)
           isLoadMore.value = false
           // 判断数据库还有没有帖子数据可请求
-          const currentPostsLen = store.state.postList.length
-          if (currentPostsLen === count) {
-            Alert({
-              type: 'success',
-              msg: '已加载完，没有更多帖子咯！',
-            })
-            return
-          }
+          // const currentPostsLen = store.state.postList.length
+          // if (currentPostsLen - 5 === count) {
+          //   Alert({
+          //     type: 'success',
+          //     msg: '已加载完，没有更多帖子咯！',
+          //   })
+          //   return
+          // }
           canLoadMore = true
         }
       })
@@ -177,6 +189,7 @@ export default defineComponent({
     }
     onMounted(() => {
       _fetchPosts(true)
+      _fetchHotPosts()
       setSideBar()
       window.addEventListener('resize', () => {
         setSideBar()
@@ -197,7 +210,19 @@ export default defineComponent({
       isLoadMore,
       isLoadingPosts,
       handleRefresh,
+      hotPosts,
     }
+  },
+  components: {
+    Header,
+    PostList,
+    Profile,
+    HotPostCard,
+    NoticeCard,
+    EditPopup,
+    ImageView,
+    CommentPopup,
+    ModifyUserInfo,
   },
 })
 </script>

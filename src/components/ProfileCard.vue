@@ -1,7 +1,7 @@
 <template>
   <transition name="float">
     <div v-show="isShow" class="ProfileCard">
-      <div class="ProfileCard-inner shadow" v-if="data.userId">
+      <div class="ProfileCard-inner shadow" v-if="data">
         <div class="ProfileCard-avatar">
           <img :src="data.avatar_url" class="Avatar" />
         </div>
@@ -13,22 +13,35 @@
           <ul class="userRecord-list">
             <li class="userRecord-item">
               <span class="title">发表</span>
-              <span class="count">999</span>
+              <span class="count">{{ data.userRecord.releaseCount || 0 }}</span>
             </li>
             <li class="userRecord-item">
               <span class="title">关注</span>
-              <span class="count">999</span>
+              <span class="count">{{
+                data.userRecord.followingCount || 0
+              }}</span>
             </li>
             <li class="userRecord-item">
               <span class="title">粉丝</span>
-              <span class="count">999</span>
+              <span class="count">{{ data.userRecord.fansCount || 0 }}</span>
             </li>
           </ul>
         </div>
         <div class="ProfileCard-bot">
-          <button class="followButton">
+          <button
+            class="followButton"
+            v-if="!data.isFollow"
+            @click="handleFollowUser(data._id)"
+          >
             <i class="iconfont">&#xe64d;</i>
             关注
+          </button>
+          <button
+            class="followButton isFollow"
+            v-else
+            @click="handleUnFollowUser(data._id)"
+          >
+            已关注
           </button>
           <button class="chatButton">
             <i class="iconfont">&#xe61e;</i>
@@ -46,7 +59,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, inject } from 'vue'
+import { useStore } from 'vuex'
+import { followUser, unFollowUser } from '../api/users'
 
 export default defineComponent({
   props: {
@@ -59,8 +74,47 @@ export default defineComponent({
       default: false,
     },
   },
-  setup() {
-    return {}
+  setup(prop) {
+    const store = useStore()
+    const Alert = inject('Alert')
+
+    // 关注用户
+    const handleFollowUser = (userId: string) => {
+      const myId = store.state.user._id
+      if (userId === myId) {
+        Alert({ type: 'error', msg: '不可以关注自己！' })
+        return
+      }
+      followUser(userId)
+        .then((res) => {
+          if (res.status === 204) {
+            prop.data.isFollow = true
+            store.commit('changeFollowStatus', { userId, isFollow: true })
+            Alert({ type: 'success', msg: '关注成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'error', msg: '关注失败，请重试！' })
+        })
+    }
+    // 取消关注用户
+    const handleUnFollowUser = (userId: string) => {
+      unFollowUser(userId)
+        .then((res) => {
+          if (res.status === 204) {
+            prop.data.isFollow = false
+            store.commit('changeFollowStatus', { userId, isFollow: false })
+            Alert({ type: 'success', msg: '取消关注成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'error', msg: '取消关注失败，请重试！' })
+        })
+    }
+    return {
+      handleFollowUser,
+      handleUnFollowUser,
+    }
   },
 })
 </script>
@@ -166,6 +220,12 @@ export default defineComponent({
         transition: $animation;
         &:hover {
           background-color: $color-main-hover;
+        }
+        &.isFollow {
+          background-color: $color-main-hover;
+          &:hover {
+            background-color: $color-error;
+          }
         }
       }
       .chatButton {
