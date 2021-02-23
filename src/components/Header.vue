@@ -30,7 +30,7 @@
           <div class="btn-tips">22</div>
         </div>
         <div class="Header-userInfo-item">
-          <button class="Header-userInfo-btn">
+          <button class="Header-userInfo-btn" @click="handleOpenChatPopup">
             <i class="iconfont">&#xe61e;</i>
           </button>
           <div class="btn-tips">2</div>
@@ -47,10 +47,17 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useStore } from 'vuex'
 
 export default defineComponent({
   setup() {
-    return {}
+    const store = useStore()
+    const handleOpenChatPopup = () => {
+      store.commit('changeShowChatFlag', true)
+    }
+    return {
+      handleOpenChatPopup,
+    }
   },
 })
 </script>
@@ -176,6 +183,8 @@ export default defineComponent({
           border-radius: 20px;
           border: 2px solid $color-white;
           background-color: $color-main;
+          user-select: none;
+          cursor: pointer;
         }
       }
       .Header-profile {

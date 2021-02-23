@@ -43,7 +43,7 @@
           >
             已关注
           </button>
-          <button class="chatButton">
+          <button class="chatButton" @click="handleToChat">
             <i class="iconfont">&#xe61e;</i>
             私信
           </button>
@@ -62,6 +62,7 @@
 import { defineComponent, inject } from 'vue'
 import { useStore } from 'vuex'
 import { followUser, unFollowUser } from '../api/users'
+import { createUserRelation } from '../api/chat'
 
 export default defineComponent({
   props: {
@@ -111,9 +112,29 @@ export default defineComponent({
           Alert({ type: 'error', msg: '取消关注失败，请重试！' })
         })
     }
+    // 创建私信
+    const handleToChat = () => {
+      const myId = store.state.user._id
+      const user = prop.data._id
+      if (user === myId) {
+        Alert({ type: 'error', msg: '不可以私信自己' })
+        return
+      }
+      if (!user) {
+        return
+      }
+      createUserRelation(user).then((res) => {
+        console.log(res)
+        const result = res.data
+        if (result && result.code === 200) {
+          // 打开聊天面板
+        }
+      })
+    }
     return {
       handleFollowUser,
       handleUnFollowUser,
+      handleToChat,
     }
   },
 })

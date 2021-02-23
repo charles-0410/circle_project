@@ -41,6 +41,7 @@ router.beforeEach((to, from, next) => {
           if (res.data && res.data.code === 200) {
             const userInfo = res.data.data.user
             store.commit('changeUserInfo', userInfo)
+            store.commit('initWebSocket', {})
             next()
           } else {
             next('login')
@@ -48,7 +49,8 @@ router.beforeEach((to, from, next) => {
         })
         .catch((err) => {
           const { message } = err.response.data
-          if (message == 'jwt expired') {
+          const status = err.response.status
+          if (message == 'jwt expired' || status === 500) {
             // token过期 清除本地保存的token并跳转到登录页
             localStorage.removeItem('circleToken')
             next('login')

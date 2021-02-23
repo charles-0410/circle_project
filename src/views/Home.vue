@@ -50,6 +50,7 @@
     />
     <CommentPopup />
     <ModifyUserInfo v-show="false" />
+    <ChatPopup />
   </div>
 </template>
 
@@ -65,6 +66,7 @@ import EditPopup from '../components/EditPopup.vue'
 import ImageView from '../components/ImageView.vue'
 import CommentPopup from '../components/CommentPopup.vue'
 import ModifyUserInfo from '../components/ModifyUserInfo.vue'
+import ChatPopup from '../components/ChatPopup.vue'
 import { fetchPosts, fetchHotPosts } from '../api/posts'
 
 export default defineComponent({
@@ -223,6 +225,7 @@ export default defineComponent({
     ImageView,
     CommentPopup,
     ModifyUserInfo,
+    ChatPopup,
   },
 })
 </script>

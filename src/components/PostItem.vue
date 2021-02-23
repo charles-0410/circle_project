@@ -20,7 +20,7 @@
             躲起来的星星也在努力发光
             <span class="datetime">
               <i class="dot">·</i>
-              {{ new Date(post.createdAt).toLocaleTimeString() }}
+              {{ formatTime(post.createdAt) }}
             </span>
           </p>
         </div>
@@ -107,6 +107,7 @@ import { defineComponent, ref, inject } from 'vue'
 import { useStore } from 'vuex'
 import { UserInfo } from '../store'
 import ProfileCard from './ProfileCard.vue'
+import { formatMsgTime } from '../util/js/formatTime'
 import {
   findUserInfoByUserid,
   followUser,
@@ -149,7 +150,6 @@ export default defineComponent({
           const userInfo = result.data.userInfo
           userInfo.isFollow = result.data.isFollow
           profileData.value = userInfo
-          console.log(profileData.value)
         }
       })
     }
@@ -227,6 +227,10 @@ export default defineComponent({
           Alert({ type: 'success', msg: '取消点赞失败！' })
         })
     }
+    // 格式化时间
+    const formatTime = (time: Date) => {
+      return formatMsgTime(time)
+    }
     return {
       isShowProfileCard,
       changeShowProfileCard,
@@ -238,6 +242,7 @@ export default defineComponent({
       handleUnFollowUser,
       handleLikingPost,
       handleUnLikingPost,
+      formatTime,
     }
   },
 })

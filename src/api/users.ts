@@ -92,6 +92,30 @@ export const unLikingPost = (postId: string) => {
  * 获取点赞帖子列表
  * @param {String} userId 用户id
  */
-export const fetchLinkingPosts = (userId: string) => {
+export const fetchLikingPosts = (userId: string) => {
   return axios.get(`/api/users/${userId}/likingPosts`)
+}
+
+/**
+ * 点赞评论
+ * @param {String} commentId 评论id
+ */
+export const likingComment = (commentId: string) => {
+  return axios.put(`/api/users/likingComments/${commentId}`)
+}
+
+/**
+ * 取消点赞评论
+ * @param {String} commentId 评论id
+ */
+export const unLikingComment = (commentId: string) => {
+  return axios.delete(`/api/users/likingComments/${commentId}`)
+}
+
+/**
+ * 获取点赞评论列表
+ * @param {String} userId 用户id
+ */
+export const fetchLikingComments = (userId: string) => {
+  return axios.get(`/api/users/${userId}/likingComments`)
 }

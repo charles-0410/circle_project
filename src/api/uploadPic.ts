@@ -19,7 +19,7 @@ export const uploadPic = (file: Object, observer: Object) => {
   const observable = qiniu.upload(
     file,
     null,
-    'NvUJpL0MTiBoGaVWyAWmIcHo0H8Vak6fBxhWohXz:JPGSG6yByBIuV4C965jvsPNrciE=:eyJzY29wZSI6ImNoYXJsZXNmb3J1bSIsImRlYWRsaW5lIjoxNjEzNzA1MTgxfQ==',
+    'NvUJpL0MTiBoGaVWyAWmIcHo0H8Vak6fBxhWohXz:HLELLMHvKKN-8UZ-m7mDT55x2JA=:eyJzY29wZSI6ImNoYXJsZXNmb3J1bSIsImRlYWRsaW5lIjoxNjE5ODUxOTAyfQ==',
     putExtra,
     config
   )

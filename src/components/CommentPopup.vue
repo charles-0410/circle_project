@@ -39,9 +39,21 @@
                       </div>
                     </div>
                     <div class="footer">
-                      <button class="actionButton">
+                      <button
+                        class="actionButton"
+                        v-if="!item.isLiking"
+                        @click="handleLikeComment(item)"
+                      >
                         <i class="iconfont">&#xe61f;</i>
-                        点赞
+                        点赞 {{ item.likingCount }}
+                      </button>
+                      <button
+                        class="actionButton active"
+                        v-else
+                        @click="handleUnLikeComment(item)"
+                      >
+                        <i class="iconfont">&#xe663;</i>
+                        已赞 {{ item.likingCount }}
                       </button>
                       <button
                         class="actionButton"
@@ -91,9 +103,21 @@
                           </div>
                         </div>
                         <div class="footer">
-                          <button class="actionButton">
+                          <button
+                            class="actionButton"
+                            v-if="!subItem.isLiking"
+                            @click="handleLikeComment(subItem)"
+                          >
                             <i class="iconfont">&#xe61f;</i>
-                            点赞
+                            点赞 {{ subItem.likingCount }}
+                          </button>
+                          <button
+                            class="actionButton active"
+                            v-else
+                            @click="handleUnLikeComment(subItem)"
+                          >
+                            <i class="iconfont">&#xe663;</i>
+                            已赞 {{ subItem.likingCount }}
                           </button>
                           <button
                             class="actionButton"
@@ -159,7 +183,8 @@ import { computed, defineComponent, reactive, ref, watch, inject } from 'vue'
 import { useStore } from 'vuex'
 import Loading from './Loading.vue'
 import { fetchCommentsByPostid, createComment } from '../api/comments'
-import { UserInfo } from '../store'
+import { likingComment, unLikingComment } from '../api/users'
+import { UserInfo, CommentProps } from '../store'
 
 interface CommentParams {
   content: string
@@ -211,11 +236,6 @@ export default defineComponent({
         if (result && result.code === 200) {
           const comments = result.data
           if (comments.length > 0) {
-            // 处理评论回复数据
-            const reply = result.reply
-            for (let i = 0; i < comments.length; i++) {
-              comments[i].reply = reply[i]
-            }
             console.log(comments)
             store.commit('addComments', comments)
           }
@@ -295,6 +315,40 @@ export default defineComponent({
         (commentData.replyUser.id = ''),
         (commentData.replyUser.userName = '')
     }
+    // 点赞评论
+    const handleLikeComment = (comment: CommentProps) => {
+      likingComment(comment._id)
+        .then((res) => {
+          if (res.status === 204) {
+            store.commit('changeCommentLikingStatus', {
+              commentId: comment._id,
+              isReply: comment.isReply,
+              isLiking: true,
+            })
+            Alert({ type: 'success', msg: '点赞成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'error', msg: '点赞失败，请重试！' })
+        })
+    }
+    // 取消点赞评论
+    const handleUnLikeComment = (comment: CommentProps) => {
+      unLikingComment(comment._id)
+        .then((res) => {
+          if (res.status === 204) {
+            store.commit('changeCommentLikingStatus', {
+              commentId: comment._id,
+              isReply: comment.isReply,
+              isLiking: false,
+            })
+            Alert({ type: 'success', msg: '取消点赞成功！' })
+          }
+        })
+        .catch((err) => {
+          Alert({ type: 'error', msg: '取消点赞失败，请重试！' })
+        })
+    }
     return {
       handleClose,
       isShow,
@@ -304,6 +358,8 @@ export default defineComponent({
       handleSubmit,
       handleReply,
       resetCommentData,
+      handleLikeComment,
+      handleUnLikeComment,
     }
   },
   components: {
@@ -402,8 +458,16 @@ export default defineComponent({
             border-radius: 3px;
             color: $color-gray-text;
             background-color: $color-gray-bg;
+            transition: $animation;
             &:hover {
               background-color: $color-gray-bg-hover;
+            }
+            &.active {
+              color: $color-white;
+              background-color: $color-main;
+              &:hover {
+                background-color: $color-error;
+              }
             }
           }
         }

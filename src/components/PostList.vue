@@ -1,6 +1,6 @@
 <template>
   <div class="PostList">
-    <div v-if="posts.length > 1">
+    <div v-if="posts.length > 0">
       <PostItem :post="item" v-for="item in posts" :key="item._id" />
     </div>
     <div class="PostList-empty" v-else>

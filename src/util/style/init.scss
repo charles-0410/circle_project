@@ -34,7 +34,7 @@ figcaption {
   font-style: normal;
   text-decoration: none;
   border: none;
-  font-family: "Microsoft Yahei", sans-serif;
+  font-family: 'Microsoft Yahei', sans-serif;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
 }
@@ -47,6 +47,7 @@ button {
   font-size: 14px;
   cursor: pointer;
   background-color: transparent;
+  user-select: none;
 }
 input:focus {
   outline: none;
@@ -78,10 +79,11 @@ var {
 }
 /* 选中样式 */
 ::selection {
-  background: #d9ecff;
+  background: #ccf3e8;
+  // background: #d9ecff;
 }
 ::-moz-selection {
-  background: #d9ecff;
+  background: #ccf3e8;
 }
 /* 滚动条样式 */
 ::-webkit-scrollbar {
@@ -94,5 +96,5 @@ var {
   background: #d0d3d9;
 }
 ::-webkit-scrollbar-thumb:active {
-  background: #409eff;
+  background: #00c58e;
 }
